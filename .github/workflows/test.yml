@@ -12,7 +12,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: githubActions
+          POSTGRES_DB: test_db
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
@@ -46,11 +46,15 @@ jobs:
 
       - name: Drop and recreate database
         run: |
-          PGPASSWORD=postgres psql -U postgres -h 127.0.0.1 -c "DROP DATABASE IF EXISTS githubActions;"
-          PGPASSWORD=postgres psql -U postgres -h 127.0.0.1 -c "CREATE DATABASE githubActions;"
+          PGPASSWORD=postgres psql -U postgres -h 127.0.0.1 -c "DROP DATABASE IF EXISTS test_db;"
+          PGPASSWORD=postgres psql -U postgres -h 127.0.0.1 -c "CREATE DATABASE test_db;"
 
       - name: Run migrations
         run: php artisan migrate --env=testing
+
+      - name: Check if posts table exists
+        run: |
+          PGPASSWORD=postgres psql -U postgres -h 127.0.0.1 -d test_db -c "\dt"
 
       - name: Run tests
         run: php artisan test
