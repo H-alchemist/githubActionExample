@@ -46,7 +46,7 @@ jobs:
 
       - name: Create database
         run: |
-          psql -U postgres -h 127.0.0.1 -c "CREATE DATABASE test_db;"
+          PGPASSWORD=postgres psql -U postgres -h 127.0.0.1 -c "CREATE DATABASE test_db;"
 
       - name: Run migrations
         run: php artisan migrate --env=testing
