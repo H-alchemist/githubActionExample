@@ -41,6 +41,9 @@ jobs:
           echo "DB_USERNAME=postgres" >> .env
           echo "DB_PASSWORD=postgres" >> .env
 
+      - name: Debug .env file
+        run: cat .env
+
       - name: Generate application key
         run: php artisan key:generate
 
@@ -48,6 +51,12 @@ jobs:
         run: |
           PGPASSWORD=postgres psql -U postgres -h 127.0.0.1 -c "DROP DATABASE IF EXISTS test_db;"
           PGPASSWORD=postgres psql -U postgres -h 127.0.0.1 -c "CREATE DATABASE test_db;"
+
+      - name: Clear configuration cache
+        run: php artisan config:clear
+
+      - name: Verify database connection
+        run: php artisan tinker --execute="dd(DB::connection()->getPdo())"
 
       - name: Run migrations
         run: php artisan migrate --env=testing
