@@ -14,4 +14,5 @@ jobs:
           php-version: '8.2'
       - name: Install dependencies
         run: composer install
-
+      - name: Run tests
+        run: php artisan test
