@@ -17,8 +17,8 @@ class PostControllerTest extends TestCase
         'description' => 'This is a test description.',
     ]);
 
-    dump($response->status()); // Debug the status code
-    dump($response->json());   // Debug the response content
+    dump($response->status()); 
+    dump($response->json());  
 
     $response->assertStatus(201);
     $this->assertDatabaseHas('posts', ['title' => 'Test Post']);
