@@ -41,11 +41,9 @@ jobs:
           echo "DB_USERNAME=postgres" >> .env
           echo "DB_PASSWORD=postgres" >> .env
 
-      - name: Debug .env file
-        run: cat .env
-
-      - name: Create database
+      - name: Drop and recreate database
         run: |
+          PGPASSWORD=postgres psql -U postgres -h 127.0.0.1 -c "DROP DATABASE IF EXISTS test_db;"
           PGPASSWORD=postgres psql -U postgres -h 127.0.0.1 -c "CREATE DATABASE test_db;"
 
       - name: Run migrations
