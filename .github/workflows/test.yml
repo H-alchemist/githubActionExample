@@ -1,4 +1,4 @@
-name: Test and Deploy
+name: Test and Email Results
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: githubActions
+          POSTGRES_DB: test_db
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
@@ -40,7 +40,7 @@ jobs:
           echo "DB_CONNECTION=pgsql" >> .env
           echo "DB_HOST=127.0.0.1" >> .env
           echo "DB_PORT=5432" >> .env
-          echo "DB_DATABASE=githubActions" >> .env
+          echo "DB_DATABASE=test_db" >> .env
           echo "DB_USERNAME=postgres" >> .env
           echo "DB_PASSWORD=postgres" >> .env
 
@@ -48,25 +48,24 @@ jobs:
         run: php artisan migrate --env=testing
 
       - name: Run tests
+        id: run-tests  # Add an ID to capture test output
         run: php artisan test
 
-  deploy:
-    needs: test  # This job depends on the 'test' job
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
+      - name: Send email with test results
+        if: always()  # Send email even if tests fail
+        uses: dawidd6/action-send-mail@v3
         with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
-
-      - name: Deploy to server
-        run: |
-          ssh -o StrictHostKeyChecking=no \
-              -i ${{ secrets.SSH_PRIVATE_KEY }} \
-              user@your-server-ip \
-              "cd /var/www/your-app && git fetch origin main && git reset --hard origin/main && composer install --no-dev && php artisan migrate --force"
+          server_address: sandbox.smtp.mailtrap.io
+          server_port: 2525
+          username: "b558ffb54e292605bb33fefc4c6d0d2f"  # Hardcoded Mailtrap username
+          password: "089c98234baf7c525658e7bbedf41eff"  # Hardcoded Mailtrap password
+          subject: "Test Results for ${{ github.repository }}"
+          body: |
+            Test results for commit ${{ github.sha }}:
+            - Repository: ${{ github.repository }}
+            - Branch: ${{ github.ref }}
+            - Status: ${{ job.status }}
+            - Test Output:
+              ${{ steps.run-tests.outputs.result }}
+          to: your-email@example.com  # Replace with your email
+          from: your-email@example.com  # Replace with your email
