@@ -69,3 +69,7 @@ jobs:
               ${{ steps.run-tests.outputs.result }}
           to: echchablihamza1@gmail.com
           from: echchablihamza1@gmail.com
+      - name: Debug Mailtrap Response
+        run: |
+         echo "Mailtrap response status: ${{ steps.send-mail.outputs.status }}"
+
