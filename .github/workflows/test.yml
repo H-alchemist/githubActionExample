@@ -3,7 +3,7 @@ name: Test and Email Results
 on:
   push:
     branches:
-      - '*'  # Trigger on push to any branch
+      - '*'
 
 jobs:
   test:
@@ -18,7 +18,11 @@ jobs:
           POSTGRES_DB: githubActions
         ports:
           - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout code
@@ -52,13 +56,13 @@ jobs:
         run: php artisan test
 
       - name: Send email with test results
-        if: always()  # Send email even if tests fail
+        if: always()
         uses: dawidd6/action-send-mail@v3
         with:
-          server_address: smtp.mailgun.org
+          server_address: smtp.resend.com
           server_port: 587
-          username: "postmaster@sandboxe1eb0e5e6894483eba7335a51b1e1c1a.mailgun.org"
-          password: "bdafd09ede160a99d0483b268523ee47-f6202374-7de34e1a"
+          username: "resend"
+          password: "re_TSxQ6DgW_NDfipc6UZwAGygXruDA8Hgmw"  # Your Resend API key
           subject: "Test Results for ${{ github.repository }}"
           body: |
             Test results for commit ${{ github.sha }}:
@@ -67,5 +71,5 @@ jobs:
             - Status: ${{ job.status }}
             - Test Output:
               ${{ steps.run-tests.outputs.result }}
-          to: "echchablihamza1@gmail.com"
-          from: "postmaster@sandboxe1eb0e5e6894483eba7335a51b1e1c1a.mailgun.org"
+          to: echchablihamza1@gmail.com
+          from: "none.example.com"  # Use a verified sender domain from Resend
