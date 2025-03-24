@@ -67,7 +67,6 @@ jobs:
             - Branch: ${{ github.ref }}
             - Status: ${{ job.status }}
 
-            Test Output:
-            $(cat test-results.log)
+
           to: "echchablihamza1@gmail.com"
           from: "smtp.elasticemail.com"
