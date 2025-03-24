@@ -53,23 +53,25 @@ jobs:
 
       - name: Run tests
         id: run-tests
-        run: php artisan test
+        run: |
+          php artisan test | tee test-results.log
 
       - name: Send email with test results
         if: always()
         uses: dawidd6/action-send-mail@v3
         with:
-          server_address: smtp.resend.com
-          server_port: 587
-          username: "resend"
-          password: "re_TSxQ6DgW_NDfipc6UZwAGygXruDA8Hgmw"  # Your Resend API key
+          server_address: smtp.elasticemail.com
+          server_port: 2525
+          username: "echchablihamza1@gmail.com"
+          password: "D1387ABEBB0AB53828F479E08CC38571528C"
           subject: "Test Results for ${{ github.repository }}"
           body: |
             Test results for commit ${{ github.sha }}:
             - Repository: ${{ github.repository }}
             - Branch: ${{ github.ref }}
             - Status: ${{ job.status }}
-            - Test Output:
-              ${{ steps.run-tests.outputs.result }}
+
+            Test Output:
+            $(cat test-results.log)
           to: "echchablihamza1@gmail.com"
-          from: "onboarding@resend.dev"  # Use a verified sender domain from Resend
+          from: "smtp.elasticemail.com"
