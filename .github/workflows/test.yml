@@ -71,5 +71,5 @@ jobs:
             - Status: ${{ job.status }}
             - Test Output:
               ${{ steps.run-tests.outputs.result }}
-          to: echchablihamza1@gmail.com
-          from: "none.example.com"  # Use a verified sender domain from Resend
+          to: "echchablihamza1@gmail.com"
+          from: "onboarding@resend.dev"  # Use a verified sender domain from Resend
