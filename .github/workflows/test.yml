@@ -1,6 +1,9 @@
-name: Run Tests
+name: Test and Merge about Branch
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - about
 
 jobs:
   test:
@@ -12,7 +15,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: githubActions
+          POSTGRES_DB: test_db
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
@@ -37,17 +40,29 @@ jobs:
           echo "DB_CONNECTION=pgsql" >> .env
           echo "DB_HOST=127.0.0.1" >> .env
           echo "DB_PORT=5432" >> .env
-          echo "DB_DATABASE=githubActions" >> .env
+          echo "DB_DATABASE=test_db" >> .env
           echo "DB_USERNAME=postgres" >> .env
           echo "DB_PASSWORD=postgres" >> .env
-
-      - name: Drop and recreate database
-        run: |
-          PGPASSWORD=postgres psql -U postgres -h 127.0.0.1 -c "DROP DATABASE IF EXISTS githubActions;"
-          PGPASSWORD=postgres psql -U postgres -h 127.0.0.1 -c "CREATE DATABASE githubActions;"
 
       - name: Run migrations
         run: php artisan migrate --env=testing
 
       - name: Run tests
         run: php artisan test
+
+  merge:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Merge about into main
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git fetch origin main
+          git checkout main
+          git merge --no-ff about -m "Merge about branch into main"
+          git push origin main
