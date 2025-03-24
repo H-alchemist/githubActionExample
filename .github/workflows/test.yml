@@ -48,17 +48,17 @@ jobs:
         run: php artisan migrate --env=testing
 
       - name: Run tests
-        id: run-tests  # Add an ID to capture test output
+        id: run-tests
         run: php artisan test
 
       - name: Send email with test results
         if: always()  # Send email even if tests fail
         uses: dawidd6/action-send-mail@v3
         with:
-          server_address: sandbox.smtp.mailtrap.io
-          server_port: 2525
-          username: "46225b0624a9b3"  # Hardcoded Mailtrap username
-          password: "7ba42e813ff6c2"  # Hardcoded Mailtrap password
+          server_address: smtp.mailgun.org
+          server_port: 587
+          username: "postmaster@sandboxe1eb0e5e6894483eba7335a51b1e1c1a.mailgun.org"
+          password: "bdafd09ede160a99d0483b268523ee47-f6202374-7de34e1a"
           subject: "Test Results for ${{ github.repository }}"
           body: |
             Test results for commit ${{ github.sha }}:
@@ -67,9 +67,5 @@ jobs:
             - Status: ${{ job.status }}
             - Test Output:
               ${{ steps.run-tests.outputs.result }}
-          to: echchablihamza1@gmail.com
-          from: echchablihamza1@gmail.com
-      - name: Debug Mailtrap Response
-        run: |
-         echo "Mailtrap response status: ${{ steps.send-mail.outputs.status }}"
-
+          to: "echchablihamza1@gmail.com"
+          from: "postmaster@sandboxe1eb0e5e6894483eba7335a51b1e1c1a.mailgun.org"
