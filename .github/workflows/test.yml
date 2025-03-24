@@ -57,8 +57,8 @@ jobs:
         with:
           server_address: sandbox.smtp.mailtrap.io
           server_port: 2525
-          username: "b558ffb54e292605bb33fefc4c6d0d2f"  # Hardcoded Mailtrap username
-          password: "089c98234baf7c525658e7bbedf41eff"  # Hardcoded Mailtrap password
+          username: "46225b0624a9b3"  # Hardcoded Mailtrap username
+          password: "7ba42e813ff6c2"  # Hardcoded Mailtrap password
           subject: "Test Results for ${{ github.repository }}"
           body: |
             Test results for commit ${{ github.sha }}:
@@ -67,5 +67,5 @@ jobs:
             - Status: ${{ job.status }}
             - Test Output:
               ${{ steps.run-tests.outputs.result }}
-          to: your-email@example.com  # Replace with your email
-          from: your-email@example.com  # Replace with your email
+          to: echchablihamza1@gmail.com
+          from: echchablihamza1@gmail.com
