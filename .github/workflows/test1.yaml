@@ -18,7 +18,7 @@ jobs:
           POSTGRES_DB: githubActions
         ports:
           - 5432:5432
-      
+       
 
     steps:
       - name: Checkout code
@@ -52,4 +52,21 @@ jobs:
         run: |
           php artisan test | tee test-results.log
 
-     
+      - name: Send email with test results
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.elasticemail.com
+          server_port: 2525
+          username: "echchablihamza1@gmail.com"
+          password: "D1387ABEBB0AB53828F479E08CC38571528C"
+          subject: "Test Results for ${{ github.repository }}"
+          body: |
+            Test results for commit ${{ github.sha }}:
+            - Repository: ${{ github.repository }}
+            - Branch: ${{ github.ref }}
+            - Status: ${{ job.status }}
+
+            
+          to: "echchablihamza1@gmail.com"
+          from: "smtp.elasticemail.com"
