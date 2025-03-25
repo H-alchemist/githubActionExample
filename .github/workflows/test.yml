@@ -1,72 +1,16 @@
-name: Test and Email Results
+name: Run Tests
 
-on:
-  push:
-    branches:
-      - '*'
+on: [push, pull_request]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:latest
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: githubActions
-        ports:
-          - 5432:5432
-     
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: pgsql, pdo_pgsql
-
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
-
-      - name: Set up environment variables
-        run: |
-          echo "APP_ENV=testing" > .env
-          echo "APP_KEY=$(php artisan key:generate --show)" >> .env
-          echo "DB_CONNECTION=pgsql" >> .env
-          echo "DB_HOST=127.0.0.1" >> .env
-          echo "DB_PORT=5432" >> .env
-          echo "DB_DATABASE=githubActions" >> .env
-          echo "DB_USERNAME=postgres" >> .env
-          echo "DB_PASSWORD=postgres" >> .env
-
-      - name: Run migrations
-        run: php artisan migrate --env=testing
-
-      - name: Run tests
-        id: run-tests
-        run: |
-          php artisan test | tee test-results.log
-
-      - name: Send email with test results
-        if: always()
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.elasticemail.com
-          server_port: 2525
-          username: "echchablihamza1@gmail.com"
-          password: "D1387ABEBB0AB53828F479E08CC38571528C"
-          subject: "Test Results for ${{ github.repository }}"
-          body: |
-            Test results for commit ${{ github.sha }}:
-            - Repository: ${{ github.repository }}
-            - Branch: ${{ github.ref }}
-            - Status: ${{ job.status }}
-
-
-          to: "echchablihamza1@gmail.com"
-          from: "smtp.elasticemail.com"
+        run: composer install
